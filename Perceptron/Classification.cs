@@ -29,14 +29,14 @@ namespace Perceptron
                 {
                     for (int p = 0; p < layer[l]; p++)
                     {
-                        Weights[l].Add(new List<double>(new double[inputCount]));
+                        Weights[l].Add(new List<double>(new double[inputCount + 1]));
                     }
                 }
                 else
                 {
                     for (int p = 0; p < layer[l]; p++)
                     {
-                        Weights[l].Add(new List<double>(new double[layer[l - 1]]));
+                        Weights[l].Add(new List<double>(new double[layer[l - 1] + 1]));
                     }
                 }
             }
@@ -77,10 +77,12 @@ namespace Perceptron
                 {
                     double sum = 0;
                     
-                    for (int w = 0; w < copied[l][p].Count; w++)
+                    for (int w = 0; w < copied[l][p].Count - 1; w++)
                     {
                         sum += copied[l][p][w] * before[w];
                     }
+
+                    sum += copied[l][p].Last();
 
                     next[p] = ActivateFunctions[l](sum);
                 }
@@ -134,7 +136,7 @@ namespace Perceptron
             return weight;
         }
 
-        private void Epoch(int epoch, double[] input, double[] output, double omicron = 0.01, double alpha = 0.01)
+        private void Epoch(int epoch, double[] input, double[] output, double omicron = 0.001, double alpha = 0.001)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 

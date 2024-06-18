@@ -1,7 +1,7 @@
 ﻿Perceptron.Classification classification = new Perceptron.Classification(
     3,
-    new int[] { 16, 8 },
-    new List<Func<double, double>> { Perceptron.ActFunc.Relu, Perceptron.ActFunc.Sigmoid }
+    new int[] { 6, 16, 8 },
+    new List<Func<double, double>> { Perceptron.ActFunc.Relu, Perceptron.ActFunc.Relu, Perceptron.ActFunc.Sigmoid }
     );
 
 List<double[]> inputs = new List<double[]>()
