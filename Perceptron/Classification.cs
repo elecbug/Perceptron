@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 
 namespace Perceptron
 {
@@ -196,6 +197,25 @@ namespace Perceptron
         public void Test(double[] input, out double[] output)
         {
             Run(Weights, input, out output);
+        }
+
+        public void Save(string filename)
+        {
+            using(StreamWriter sw = new StreamWriter(filename))
+            {
+                string json = JsonSerializer.Serialize(Weights);
+    
+                sw.Write(json);
+            }
+        }
+        public void Load(string filename)
+        {
+            using (StreamReader sr = new StreamReader(filename))
+            {
+                string json = sr.ReadToEnd();
+
+                Weights = JsonSerializer.Deserialize<List<List<List<double>>>>(json)!;
+            }
         }
     }
 }
