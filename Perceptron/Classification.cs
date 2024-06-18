@@ -93,7 +93,7 @@ namespace Perceptron
             output = before;
         }
 
-        private double GradientDescent(double[] input, double[] output, double omicron, double alpha, int l, int p, int w)
+        private double GradientDescent(double[] input, double[] output, double omicron, double alpha, int jump, int l, int p, int w)
         {
             List<List<List<double>>> copied = new List<List<List<double>>>();
 
@@ -112,31 +112,36 @@ namespace Perceptron
                 }
             }
 
-            double weight = copied[l][p][w]; 
+            double weight = copied[l][p][w];
 
-            copied[l][p][w] += omicron;
-            Run(copied, input, out double[] oPlus); 
-            
-            copied[l][p][w] -= 2 * omicron;
-            Run(copied, input, out double[] oMinus);
-
-            double errorPlus = 0;
-            double errorMinus = 0;
-
-            for (int i = 0; i < output.Length; i++)
+            for (int i = 0; i < jump; i++)
             {
-                errorPlus += (output[i] - oPlus[i]) * (output[i] - oPlus[i]);
-                errorMinus += (output[i] - oMinus[i]) * (output[i] - oMinus[i]);
-            }
+                copied[l][p][w] += omicron;
+                Run(copied, input, out double[] oPlus);
 
-            double gradient = (errorPlus - errorMinus) / (2 * omicron);
-            
-            weight -= alpha * gradient;
+                copied[l][p][w] -= 2 * omicron;
+                Run(copied, input, out double[] oMinus);
+
+                double errorPlus = 0;
+                double errorMinus = 0;
+
+                for (int o = 0; o < output.Length; o++)
+                {
+                    errorPlus += (output[o] - oPlus[o]) * (output[o] - oPlus[o]);
+                    errorMinus += (output[o] - oMinus[o]) * (output[o] - oMinus[o]);
+                }
+
+                double gradient = (errorPlus - errorMinus) / (2 * omicron);
+
+                weight -= alpha * gradient;
+
+                copied[l][p][w] = weight;
+            }
 
             return weight;
         }
 
-        private void Epoch(int epoch, double[] input, double[] output, double omicron = 0.001, double alpha = 0.001)
+        private void Epoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 
@@ -155,35 +160,24 @@ namespace Perceptron
                 }
             }
 
-            //Thread[] ts = new Thread[Weights.Count];
-            
             for (int ll = Weights.Count - 1; ll >= 0; ll--)
             {
                 int l = ll;
 
-                //ts[ll] = new Thread(() =>
-                //{
-                    for (int p = 0; p < Weights[l].Count; p++)
+                for (int p = 0; p < Weights[l].Count; p++)
+                {
+                    for (int w = 0; w < Weights[l][p].Count; w++)
                     {
-                        for (int w = 0; w < Weights[l][p].Count; w++)
-                        {
-                            newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, l, p, w);
-                            Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                        }
+                        newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
+                        Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                     }
-                //});
-                //ts[ll].Start();
+                }
+             
+                Weights = newWeights;
             }
-
-            //for (int l = 0; l < ts.Length; l++)
-            //{
-            //    ts[l].Join();
-            //}
-
-            Weights = newWeights;
         }
 
-        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch)
+        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100)
         {
             if (inputs.Count != outputs.Count)
             {
@@ -194,7 +188,7 @@ namespace Perceptron
             {
                 for (int j = 0; j < inputs.Count; j++)
                 {
-                    Epoch(i, inputs[j], outputs[j]);
+                    Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
                 }
             }
         }

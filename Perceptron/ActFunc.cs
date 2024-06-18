@@ -18,5 +18,11 @@ namespace Perceptron
         {
             return 1.0 / (1.0 + Math.Exp(-x));
         }
+
+        public static double Selu(double x) 
+        {
+            if (x < 0) return x / 2;
+            return x;
+        }
     }
 }
