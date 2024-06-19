@@ -142,7 +142,7 @@ namespace Perceptron
             return weight;
         }
 
-        private void ThreadEpoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump)
+        private void ThreadEpoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump, int maxCount)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 
@@ -161,54 +161,64 @@ namespace Perceptron
                 }
             }
 
-            object counterLock = new object();
-            int nowCount = 0;
-            int maxCount = Environment.ProcessorCount * 6 / 10;
+            Thread[] ts = new Thread[maxCount];
+            object[] locker = new object[maxCount];
+            (bool, int, int, int)[] parameters = new (bool, int, int, int)[maxCount];
 
-            for (int l = Weights.Count - 1; l >= 0; l--)
+            for (int i = 0; i < ts.Length; i++)
             {
-                Thread[] ts = new Thread[Weights[l].Count];
+                locker[i] = new object();
 
-                for (int pp = 0; pp < Weights[l].Count; pp++)
-                {
-                    int p = pp;
-
-                    ts[p] = new Thread(() =>
-                    {
-                        lock (counterLock)
-                        {
-                            nowCount++;
-                        }
-
-                        for (int w = 0; w < Weights[l][p].Count; w++)
-                        {
-                            newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
-                            Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                        }
-
-                        lock (counterLock)
-                        {
-                            nowCount--;
-                        }
-                    });
-                }
-
-                foreach (var t in ts)
+                int x = i;
+                ts[i] = new Thread(() =>
                 {
                     while (true)
                     {
-                        lock (counterLock)
+                        while (parameters[x].Item1 == false) ;
+
+                        lock (locker[x])
                         {
-                            if (nowCount < maxCount) break;
+                            int l = parameters[x].Item2, p = parameters[x].Item3, w = parameters[x].Item4;
+
+                            newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
+                            Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+
+                            parameters[x].Item1 = false;
                         }
                     }
+                });
 
-                    t.Start();
+                ts[i].Start();
+            }
+
+            for (int l = Weights.Count - 1; l >= 0; l--)
+            {
+                for (int p = 0; p < Weights[l].Count; p++)
+                {
+                    for (int w = 0; w < Weights[l][p].Count; w++)
+                    {
+                        for (int i = 0; i < locker.Length; i++)
+                        {
+                            if (parameters[i].Item1 == false)
+                            {
+                                lock (locker[i])
+                                {
+                                    parameters[i] = (true, l, p, w);
+                                }
+
+                                break;
+                            }
+                            if (i == locker.Length - 1)
+                            {
+                                i = -1;
+                            }
+                        }
+                    }
                 }
 
-                foreach (var t in ts)
+                for (int i = 0; i < locker.Length; i++)
                 {
-                    t.Join();
+                    while (parameters[i].Item1 == true) ;
                 }
              
                 Weights = newWeights;
@@ -250,7 +260,7 @@ namespace Perceptron
             }
         }
 
-        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100, bool useThread = false)
+        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100, bool useThread = false, int maxCountOfThread = 4)
         {
             if (inputs.Count != outputs.Count)
             {
@@ -262,7 +272,7 @@ namespace Perceptron
                 for (int j = 0; j < inputs.Count; j++)
                 {
                     if (useThread == true)
-                        ThreadEpoch(i, inputs[j], outputs[j], omicron, alpha, jump);
+                        ThreadEpoch(i, inputs[j], outputs[j], omicron, alpha, jump, maxCountOfThread);
                     else
                         Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
 
@@ -284,6 +294,7 @@ namespace Perceptron
                 sw.Write(json);
             }
         }
+
         public void Load(string filename)
         {
             using (StreamReader sr = new StreamReader(filename))
