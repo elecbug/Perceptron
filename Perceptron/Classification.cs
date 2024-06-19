@@ -142,6 +142,79 @@ namespace Perceptron
             return weight;
         }
 
+        private void ThreadEpoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump)
+        {
+            List<List<List<double>>> newWeights = new List<List<List<double>>>();
+
+            for (int ll = 0; ll < Weights.Count; ll++)
+            {
+                newWeights.Add(new List<List<double>>());
+
+                for (int pp = 0; pp < Weights[ll].Count; pp++)
+                {
+                    newWeights[ll].Add(new List<double>());
+
+                    for (int ww = 0; ww < Weights[ll][pp].Count; ww++)
+                    {
+                        newWeights[ll][pp].Add(Weights[ll][pp][ww]);
+                    }
+                }
+            }
+
+            object counterLock = new object();
+            int nowCount = 0;
+            int maxCount = Environment.ProcessorCount * 6 / 10;
+
+            for (int l = Weights.Count - 1; l >= 0; l--)
+            {
+                Thread[] ts = new Thread[Weights[l].Count];
+
+                for (int pp = 0; pp < Weights[l].Count; pp++)
+                {
+                    int p = pp;
+
+                    ts[p] = new Thread(() =>
+                    {
+                        lock (counterLock)
+                        {
+                            nowCount++;
+                        }
+
+                        for (int w = 0; w < Weights[l][p].Count; w++)
+                        {
+                            newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
+                            Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                        }
+
+                        lock (counterLock)
+                        {
+                            nowCount--;
+                        }
+                    });
+                }
+
+                foreach (var t in ts)
+                {
+                    while (true)
+                    {
+                        lock (counterLock)
+                        {
+                            if (nowCount < maxCount) break;
+                        }
+                    }
+
+                    t.Start();
+                }
+
+                foreach (var t in ts)
+                {
+                    t.Join();
+                }
+             
+                Weights = newWeights;
+            }
+        }
+
         private void Epoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
@@ -161,24 +234,23 @@ namespace Perceptron
                 }
             }
 
-            for (int ll = Weights.Count - 1; ll >= 0; ll--)
+            for (int l = Weights.Count - 1; l >= 0; l--)
             {
-                int l = ll;
-
                 for (int p = 0; p < Weights[l].Count; p++)
                 {
+
                     for (int w = 0; w < Weights[l][p].Count; w++)
                     {
                         newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
                         Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                     }
                 }
-             
+
                 Weights = newWeights;
             }
         }
 
-        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100)
+        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100, bool useThread = false)
         {
             if (inputs.Count != outputs.Count)
             {
@@ -189,7 +261,11 @@ namespace Perceptron
             {
                 for (int j = 0; j < inputs.Count; j++)
                 {
-                    Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
+                    if (useThread == true)
+                        ThreadEpoch(i, inputs[j], outputs[j], omicron, alpha, jump);
+                    else
+                        Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
+
                 }
             }
         }

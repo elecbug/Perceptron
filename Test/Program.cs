@@ -140,7 +140,7 @@ if (File.Exists("four-bit-classification.json"))
     classification.Load("four-bit-classification.json");
 }
 
-classification.Learn(inputs, outputs, 10, 0.0000001, 0.001, 100);
+classification.Learn(inputs, outputs, 10, 0.0000001, 0.001, 100, true);
 
 for (int i = 0; i < inputs.Count; i++)
 {
