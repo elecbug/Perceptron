@@ -142,7 +142,7 @@ namespace Perceptron
             return weight;
         }
 
-        private void ThreadEpoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump, int maxCount)
+        /* private void ThreadEpoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump, int maxCount)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 
@@ -223,7 +223,7 @@ namespace Perceptron
              
                 Weights = newWeights;
             }
-        }
+        } */
 
         private void Epoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump)
         {
@@ -260,7 +260,7 @@ namespace Perceptron
             }
         }
 
-        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100, bool useThread = false, int maxCountOfThread = 4)
+        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100)
         {
             if (inputs.Count != outputs.Count)
             {
@@ -271,11 +271,7 @@ namespace Perceptron
             {
                 for (int j = 0; j < inputs.Count; j++)
                 {
-                    if (useThread == true)
-                        ThreadEpoch(i, inputs[j], outputs[j], omicron, alpha, jump, maxCountOfThread);
-                    else
-                        Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
-
+                    Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
                 }
             }
         }
