@@ -1,51 +1,51 @@
-﻿Thread t1 = new Thread(() =>
-{
-    Perceptron.Classification classification = new Perceptron.Classification(
-        2,
-        new int[] { 4, 2 },
-        new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
-    );
+﻿//Thread t1 = new Thread(() =>
+//{
+//    Perceptron.Classification classification = new Perceptron.Classification(
+//        2,
+//        new int[] { 4, 2 },
+//        new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+//    );
 
-    List<double[]> inputs = new List<double[]>()
-    {
-        new[] { 0.0, 0.0 },
-        new[] { 0.0, 1.0 },
-        new[] { 1.0, 0.0 },
-        new[] { 1.0, 1.0 }
-    };
-    List<double[]> outputs = new List<double[]>()
-    {
-        new[] { 1.0, 1.0 },
-        new[] { 1.0, 0.0 },
-        new[] { 0.0, 1.0 },
-        new[] { 0.0, 0.0 },
-    };
+//    List<double[]> inputs = new List<double[]>()
+//    {
+//        new[] { 0.0, 0.0 },
+//        new[] { 0.0, 1.0 },
+//        new[] { 1.0, 0.0 },
+//        new[] { 1.0, 1.0 }
+//    };
+//    List<double[]> outputs = new List<double[]>()
+//    {
+//        new[] { 1.0, 1.0 },
+//        new[] { 1.0, 0.0 },
+//        new[] { 0.0, 1.0 },
+//        new[] { 0.0, 0.0 },
+//    };
 
-    string filename = "not.json";
+//    string filename = "not.json";
 
-    if (File.Exists(filename))
-    {
-        classification.Load(filename);
-    }
+//    if (File.Exists(filename))
+//    {
+//        classification.Load(filename);
+//    }
 
-    classification.Learn(inputs, outputs, 3000, 0.0000001, 0.001, 100);
+//    classification.Learn(inputs, outputs, 3000, 0.0000001, 0.001, 100);
 
-    for (int i = 0; i < inputs.Count; i++)
-    {
-        classification.Test(inputs[i], out double[] o);
+//    for (int i = 0; i < inputs.Count; i++)
+//    {
+//        classification.Test(inputs[i], out double[] o);
 
-        foreach (var x in o)
-        {
-            Console.WriteLine(x.ToString("0.000-000-000-000"));
-        }
+//        foreach (var x in o)
+//        {
+//            Console.WriteLine(x.ToString("0.000-000-000-000"));
+//        }
 
-        Console.WriteLine();
-    }
+//        Console.WriteLine();
+//    }
 
-    classification.Save(filename);
-});
+//    classification.Save(filename);
+//});
 
-t1.Start();
+//t1.Start();
 
 //Thread t2 = new Thread(() =>
 //{
@@ -105,74 +105,74 @@ t1.Start();
 
 //t2.Start();
 
-t1.Join();
+//t1.Join();
 //t2.Join();
 
-//Perceptron.Classification classification = new Perceptron.Classification(
-//    4,
-//    new int[] { 24, 16 },
-//    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
-//);
+Perceptron.Classification classification = new Perceptron.Classification(
+    4,
+    new int[] { 48, 32, 16 },
+    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+);
 
-//List<double[]> inputs = new List<double[]>()
-//{
-//    new[] { 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 1.0 },
-//    new[] { 0.0, 0.0, 1.0, 0.0 },
-//    new[] { 0.0, 0.0, 1.0, 1.0 },
-//    new[] { 0.0, 1.0, 0.0, 0.0 },
-//    new[] { 0.0, 1.0, 0.0, 1.0 },
-//    new[] { 0.0, 1.0, 1.0, 0.0 },
-//    new[] { 0.0, 1.0, 1.0, 1.0 },
-//    new[] { 1.0, 0.0, 0.0, 0.0 },
-//    new[] { 1.0, 0.0, 0.0, 1.0 },
-//    new[] { 1.0, 0.0, 1.0, 0.0 },
-//    new[] { 1.0, 0.0, 1.0, 1.0 },
-//    new[] { 1.0, 1.0, 0.0, 0.0 },
-//    new[] { 1.0, 1.0, 0.0, 1.0 },
-//    new[] { 1.0, 1.0, 1.0, 0.0 },
-//    new[] { 1.0, 1.0, 1.0, 1.0 }
-//};
-//List<double[]> outputs = new List<double[]>()
-//{
-//    new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
-//    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
-//};
+List<double[]> inputs = new List<double[]>()
+{
+    new[] { 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 1.0 },
+    new[] { 0.0, 0.0, 1.0, 0.0 },
+    new[] { 0.0, 0.0, 1.0, 1.0 },
+    new[] { 0.0, 1.0, 0.0, 0.0 },
+    new[] { 0.0, 1.0, 0.0, 1.0 },
+    new[] { 0.0, 1.0, 1.0, 0.0 },
+    new[] { 0.0, 1.0, 1.0, 1.0 },
+    new[] { 1.0, 0.0, 0.0, 0.0 },
+    new[] { 1.0, 0.0, 0.0, 1.0 },
+    new[] { 1.0, 0.0, 1.0, 0.0 },
+    new[] { 1.0, 0.0, 1.0, 1.0 },
+    new[] { 1.0, 1.0, 0.0, 0.0 },
+    new[] { 1.0, 1.0, 0.0, 1.0 },
+    new[] { 1.0, 1.0, 1.0, 0.0 },
+    new[] { 1.0, 1.0, 1.0, 1.0 }
+};
+List<double[]> outputs = new List<double[]>()
+{
+    new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
+    new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
+};
 
-//if (File.Exists("four-bit-classification.json"))
-//{
-//    classification.Load("four-bit-classification.json");
-//}
+if (File.Exists("four-bit-classification.json"))
+{
+    classification.Load("four-bit-classification.json");
+}
 
-//for (int j = 0; j < 10; j++)
-//{
-//    classification.Learn(inputs, outputs, 2, 0.0000001, 0.01, 50);
+for (int j = 0; j < 10; j++)
+{
+    classification.Learn(inputs, outputs, 1, 0.0000001, 0.0001, 200);
 
-//    for (int i = 0; i < inputs.Count; i++)
-//    {
-//        classification.Test(inputs[i], out double[] o);
+    for (int i = 0; i < inputs.Count; i++)
+    {
+        classification.Test(inputs[i], out double[] o);
 
-//        foreach (var x in o)
-//        {
-//            Console.WriteLine(x.ToString("0.000-000-000-000"));
-//        }
+        foreach (var x in o)
+        {
+            Console.WriteLine(x.ToString("0.000-000-000-000"));
+        }
 
-//        Console.WriteLine();
-//    }
+        Console.WriteLine();
+    }
 
-//    classification.Save("four-bit-classification.json");
-//}
+    classification.Save("four-bit-classification.json");
+}

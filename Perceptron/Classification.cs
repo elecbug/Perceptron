@@ -225,7 +225,7 @@ namespace Perceptron
             }
         } */
 
-        private void Epoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump)
+        private void Epoch(int epoch, int nowInput, double[] input, double[] output, double omicron, double alpha, int jump)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 
@@ -248,11 +248,10 @@ namespace Perceptron
             {
                 for (int p = 0; p < Weights[l].Count; p++)
                 {
-
                     for (int w = 0; w < Weights[l][p].Count; w++)
                     {
                         newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
-                        Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                        Debug.WriteLine($"Epoch: {epoch}, Now: {nowInput}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                     }
                 }
 
@@ -271,7 +270,7 @@ namespace Perceptron
             {
                 for (int j = 0; j < inputs.Count; j++)
                 {
-                    Epoch(i, inputs[j], outputs[j], omicron, alpha, jump);
+                    Epoch(i, j, inputs[j], outputs[j], omicron, alpha, jump);
                 }
             }
         }
