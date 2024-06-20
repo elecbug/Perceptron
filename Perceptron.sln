@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perceptron", "Perceptron\Perceptron.csproj", "{01187F9D-8768-4530-9DDD-818E74E96668}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perceptron", "Perceptron\Perceptron.csproj", "{01187F9D-8768-4530-9DDD-818E74E96668}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{82E787BB-E2BA-48D6-B8DC-018DC90EF92B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{82E787BB-E2BA-48D6-B8DC-018DC90EF92B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Visualizer", "Visualizer\Visualizer.csproj", "{575A42AE-FBFB-4CFE-A066-60E3FC393123}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{82E787BB-E2BA-48D6-B8DC-018DC90EF92B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82E787BB-E2BA-48D6-B8DC-018DC90EF92B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82E787BB-E2BA-48D6-B8DC-018DC90EF92B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{575A42AE-FBFB-4CFE-A066-60E3FC393123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{575A42AE-FBFB-4CFE-A066-60E3FC393123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{575A42AE-FBFB-4CFE-A066-60E3FC393123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{575A42AE-FBFB-4CFE-A066-60E3FC393123}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
