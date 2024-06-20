@@ -1,25 +1,10 @@
 ﻿using System.Drawing;
 
 Perceptron.Classification classification = new Perceptron.Classification(
-        2,
-        new int[] { 4, 2 },
-        new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
-    );
-
-List<double[]> inputs = new List<double[]>()
-    {
-        new[] { 0.0, 0.0 },
-        new[] { 0.0, 1.0 },
-        new[] { 1.0, 0.0 },
-        new[] { 1.0, 1.0 }
-    };
-List<double[]> outputs = new List<double[]>()
-    {
-        new[] { 0.0, 1.0 },
-        new[] { 1.0, 0.0 },
-        new[] { 1.0, 0.0 },
-        new[] { 0.0, 1.0 },
-    };
+    2,
+    new int[] { 4, 2 },
+    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+);
 
 if (File.Exists("xor-classification.json"))
 {
