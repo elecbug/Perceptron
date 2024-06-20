@@ -28,7 +28,7 @@
 //        classification.Load(filename);
 //    }
 
-//    classification.Learn(inputs, outputs, 3000, 0.0000001, 0.001, 100);
+//    classification.Learn(inputs, outputs, 1000, 0.0000001, 0.001, 100);
 
 //    for (int i = 0; i < inputs.Count; i++)
 //    {
@@ -83,24 +83,21 @@
 //        classification.Load("three-bit-classification.json");
 //    }
 
-//    for (int j = 0; j < 10; j++)
+//    classification.Learn(inputs, outputs, 100, 0.0000001, 0.001, 1000);
+
+//    for (int i = 0; i < inputs.Count; i++)
 //    {
-//        classification.Learn(inputs, outputs, 100, 0.0000001, 0.001, 100);
+//        classification.Test(inputs[i], out double[] o);
 
-//        for (int i = 0; i < inputs.Count; i++)
+//        foreach (var x in o)
 //        {
-//            classification.Test(inputs[i], out double[] o);
-
-//            foreach (var x in o)
-//            {
-//                Console.WriteLine(x.ToString("0.000-000-000-000"));
-//            }
-
-//            Console.WriteLine();
+//            Console.WriteLine(x.ToString("0.000-000-000-000"));
 //        }
 
-//        classification.Save("three-bit-classification.json");
+//        Console.WriteLine();
 //    }
+
+//    classification.Save("three-bit-classification.json");
 //});
 
 //t2.Start();
@@ -110,8 +107,8 @@
 
 Perceptron.Classification classification = new Perceptron.Classification(
     4,
-    new int[] { 48, 32, 16 },
-    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+    new int[] { 24, 16 },
+    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
 );
 
 List<double[]> inputs = new List<double[]>()
@@ -158,9 +155,9 @@ if (File.Exists("four-bit-classification.json"))
     classification.Load("four-bit-classification.json");
 }
 
-for (int j = 0; j < 10; j++)
+for (int j = 0; j < 1000; j++)
 {
-    classification.Learn(inputs, outputs, 1, 0.0000001, 0.0001, 200);
+    classification.Learn(inputs, outputs, 10, 0.0000001, 0.001, 1000);
 
     for (int i = 0; i < inputs.Count; i++)
     {
