@@ -1,3 +1,3 @@
 # Perceptron
 
-- Project **Perceptron** is C# deep-learning project that has goal to classificate **traning-number data-set** 
+- Project **Perceptron** is C# deep-learning project that has goal to develop for **traning-number data-set** classificator
