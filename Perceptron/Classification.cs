@@ -94,7 +94,8 @@ namespace Perceptron
             output = before;
         }
 
-        private double GradientDescent(List<double[]> inputs, List<double[]> outputs, double omicron, double alpha, int jump, int l, int p, int w)
+        private double GradientDescent(List<double[]> inputs, List<double[]> outputs, 
+            double omicron, double alpha, int jump, int l, int p, int w)
         {
             List<List<List<double>>> copied = new List<List<List<double>>>();
 
@@ -236,7 +237,8 @@ namespace Perceptron
             }
         } */
 
-        private void Epoch(int epoch, List<double[]> inputs, List<double[]> outputs, double omicron, double alpha, int jump)
+        private void Epoch(int epoch, List<double[]> inputs, List<double[]> outputs, 
+            double omicron, double alpha, int jump, Logging logging)
         {
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 
@@ -262,7 +264,25 @@ namespace Perceptron
                     for (int w = 0; w < Weights[l][p].Count; w++)
                     {
                         newWeights[l][p][w] = GradientDescent(inputs, outputs, omicron, alpha, jump, l, p, w);
-                        Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+
+                        switch (logging)
+                        {
+                            case Logging.Debug:
+                                Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                    $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                                break;
+                            case Logging.Console:
+                                Console.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                    $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                                break;
+                            case Logging.FileStream:
+                                using (StreamWriter sw = new StreamWriter("log.log"))
+                                {
+                                    sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                        $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                                }
+                                break;
+                        }
                     }
                 }
 
@@ -270,7 +290,15 @@ namespace Perceptron
             }
         }
 
-        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, double omicron = 0.0000001, double alpha = 0.001, int jump = 100)
+        public enum Logging
+        {
+            Debug,
+            Console,
+            FileStream,
+        }
+
+        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, 
+            double omicron = 0.0000001, double alpha = 0.001, int jump = 1000, Logging logging = Logging.Debug)
         {
             if (inputs.Count != outputs.Count)
             {
@@ -279,7 +307,7 @@ namespace Perceptron
 
             for (int i = 0; i < epoch; i++)
             {
-                Epoch(i, inputs, outputs, omicron, alpha, jump);
+                Epoch(i, inputs, outputs, omicron, alpha, jump, logging);
             }
         }
 
