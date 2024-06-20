@@ -9,15 +9,15 @@ namespace Perceptron
 
         public int InputCount { get; private set; }
         public int OutputCount { get; private set; }
-        public List<Func<double, double>> ActivateFunctions { get; private set; }
+        public List<Func<double, double>> ActivationFunctions { get; private set; }
 
-        public Classification(int inputCount, int[] layer, List<Func<double, double>> activateFunctions)
+        public Classification(int inputCount, int[] layer, List<Func<double, double>> activationFunctions)
         {
             InputCount = inputCount;
             OutputCount = layer.Last();
-            ActivateFunctions = activateFunctions;
+            ActivationFunctions = activationFunctions;
 
-            if (activateFunctions.Count != layer.Length)
+            if (activationFunctions.Count != layer.Length)
             {
                 throw new ArgumentException("Activation function's count and layer's count are not samed");
             }
@@ -85,7 +85,7 @@ namespace Perceptron
 
                     sum += copied[l][p].Last();
 
-                    next[p] = ActivateFunctions[l](sum);
+                    next[p] = ActivationFunctions[l](sum);
                 }
 
                 before = next;
