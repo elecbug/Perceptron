@@ -107,8 +107,8 @@
 
 Perceptron.Classification classification = new Perceptron.Classification(
     4,
-    new int[] { 24, 16 },
-    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+    new int[] { 64, 64, 16 },
+    new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
 );
 
 List<double[]> inputs = new List<double[]>()
@@ -153,6 +153,18 @@ List<double[]> outputs = new List<double[]>()
 if (File.Exists("four-bit-classification.json"))
 {
     classification.Load("four-bit-classification.json");
+
+    for (int i = 0; i < inputs.Count; i++)
+    {
+        classification.Test(inputs[i], out double[] o);
+
+        foreach (var x in o)
+        {
+            Console.WriteLine(x.ToString("0.000-000-000-000"));
+        }
+
+        Console.WriteLine();
+    }
 }
 
 for (int j = 0; j < 1000; j++)
