@@ -6,9 +6,11 @@ Perceptron.Classification classification = new Perceptron.Classification(
     new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
 );
 
-if (File.Exists("xor-classification.json"))
+string file = "not.json";
+
+if (File.Exists(file))
 {
-    classification.Load("xor-classification.json");
+    classification.Load(file);
 }
 
 Bitmap bitmap = new Bitmap(1000, 1000);
@@ -22,7 +24,7 @@ for (int x = 0; x < bitmap.Width; x++)
     }
 }
 
-bitmap.Save("xor-map.png");
+bitmap.Save(file + ".png");
 
 //for (int j = 0; j < 10; j++)
 //{
