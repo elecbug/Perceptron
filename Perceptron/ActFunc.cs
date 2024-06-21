@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Perceptron
 {
+    /// <summary>
+    /// 활성화 함수 목록
+    /// </summary>
     public static class ActFunc
     {
         private const double lambda = 1.0507;
