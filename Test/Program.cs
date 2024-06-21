@@ -270,7 +270,10 @@
 
                 foreach (var x in o)
                 {
-                    Console.WriteLine(x.ToString("0.000-000-000-000"));
+                    using (StreamWriter sw = new StreamWriter("log.log", true))
+                    {
+                        sw.WriteLine(x.ToString("0.000-000-000-000"));
+                    }
                 }
 
                 Console.WriteLine();
