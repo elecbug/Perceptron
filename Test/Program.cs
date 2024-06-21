@@ -251,15 +251,15 @@
             {
                 classification.Test(inputs[i], out double[] o);
 
-                foreach (var x in o)
+                using (StreamWriter sw = new StreamWriter("log.log", true))
                 {
-                    using (StreamWriter sw = new StreamWriter("log.log", true))
+                    foreach (var x in o)
                     {
                         sw.WriteLine(x.ToString("0.000-000-000-000"));
                     }
-                }
 
-                Console.WriteLine();
+                    sw.WriteLine();
+                }
             }
         }
 
