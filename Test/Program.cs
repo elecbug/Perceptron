@@ -253,7 +253,10 @@
 
                 foreach (var x in o)
                 {
-                    Console.WriteLine(x.ToString("0.000-000-000-000"));
+                    using (StreamWriter sw = new StreamWriter("log.log", true))
+                    {
+                        sw.WriteLine(x.ToString("0.000-000-000-000"));
+                    }
                 }
 
                 Console.WriteLine();
@@ -262,7 +265,7 @@
 
         for (int j = 0; j < 1000; j++)
         {
-            classification.Learn(inputs, outputs, 1, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.Console);
+            classification.Learn(inputs, outputs, 1, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.FileStream);
 
             for (int i = 0; i < inputs.Count; i++)
             {
