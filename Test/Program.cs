@@ -2,7 +2,7 @@
 {
     private static void Main(string[] args)
     {
-        FourClassification();
+        ThreeClassification();
     }
 
     private static void Logical()
@@ -152,45 +152,48 @@
         );
 
         List<double[]> inputs = new List<double[]>()
-            {
-                new[] { 0.0, 0.0, 0.0 },
-                new[] { 0.0, 0.0, 1.0 },
-                new[] { 0.0, 1.0, 0.0 },
-                new[] { 0.0, 1.0, 1.0 },
-                new[] { 1.0, 0.0, 0.0 },
-                new[] { 1.0, 0.0, 1.0 },
-                new[] { 1.0, 1.0, 0.0 },
-                new[] { 1.0, 1.0, 1.0 }
-            };
+        {
+            new[] { 0.0, 0.0, 0.0 },
+            new[] { 0.0, 0.0, 1.0 },
+            new[] { 0.0, 1.0, 0.0 },
+            new[] { 0.0, 1.0, 1.0 },
+            new[] { 1.0, 0.0, 0.0 },
+            new[] { 1.0, 0.0, 1.0 },
+            new[] { 1.0, 1.0, 0.0 },
+            new[] { 1.0, 1.0, 1.0 }
+        };
         List<double[]> outputs = new List<double[]>()
-            {
-                new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-                new[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-                new[] { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-                new[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
-                new[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 },
-                new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 },
-                new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
-                new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
-            };
+        {
+            new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+            new[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+            new[] { 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+            new[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+            new[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 },
+            new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 },
+            new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
+            new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
+        };
 
         if (File.Exists("three-bit-classification.json"))
         {
             classification.Load("three-bit-classification.json");
         }
 
-        classification.Learn(inputs, outputs, 10, 0.0000001, 0.001, 1000);
+        classification.Learn(inputs, outputs, 100, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.FileStream);
 
         for (int i = 0; i < inputs.Count; i++)
         {
             classification.Test(inputs[i], out double[] o);
 
-            foreach (var x in o)
+            using (StreamWriter sw = new StreamWriter("log.log", true))
             {
-                Console.WriteLine(x.ToString("0.000-000-000-000"));
-            }
+                foreach (var x in o)
+                {
+                    sw.WriteLine(x.ToString("0.000-000-000-000"));
+                }
 
-            Console.WriteLine();
+                sw.WriteLine();
+            }
         }
 
         classification.Save("three-bit-classification.json");
