@@ -2,7 +2,54 @@
 {
     private static void Main(string[] args)
     {
-        TwoClassification();
+        LogicalFromOne();
+    }
+
+    private static void LogicalFromOne()
+    {
+        Perceptron.Classification classification = new Perceptron.Classification(
+            2,
+            new int[] { 4, 1 },
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Sigmoid, Perceptron.ActFunc.Sigmoid }
+        );
+
+        List<double[]> inputs = new List<double[]>()
+        {
+            new[] { 0.0, 0.0 },
+            new[] { 0.0, 1.0 },
+            new[] { 1.0, 0.0 },
+            new[] { 1.0, 1.0 }
+        };
+        List<double[]> outputs = new List<double[]>()
+        {
+            new[] { 0.0 },
+            new[] { 1.0 },
+            new[] { 1.0 },
+            new[] { 0.0 },
+        };
+
+        string filename = "xor-four.json";
+
+        if (File.Exists(filename))
+        {
+            classification.Load(filename);
+        }
+
+        classification.Learn(inputs, outputs, 5000, 0.0000001, 0.001, 100);
+
+        for (int i = 0; i < inputs.Count; i++)
+        {
+            classification.Test(inputs[i], out double[] o);
+
+            foreach (var x in o)
+            {
+                Console.WriteLine(x.ToString("0.000-000-000-000"));
+            }
+
+            Console.WriteLine();
+        }
+
+        classification.Save(filename);
     }
 
     private static void Logical()
@@ -14,19 +61,19 @@
         );
 
         List<double[]> inputs = new List<double[]>()
-            {
-                new[] { 0.0, 0.0 },
-                new[] { 0.0, 1.0 },
-                new[] { 1.0, 0.0 },
-                new[] { 1.0, 1.0 }
-            };
+        {
+            new[] { 0.0, 0.0 },
+            new[] { 0.0, 1.0 },
+            new[] { 1.0, 0.0 },
+            new[] { 1.0, 1.0 }
+        };
         List<double[]> outputs = new List<double[]>()
-            {
-                new[] { 1.0, 1.0 },
-                new[] { 1.0, 0.0 },
-                new[] { 0.0, 1.0 },
-                new[] { 0.0, 0.0 },
-            };
+        {
+            new[] { 1.0, 1.0 },
+            new[] { 1.0, 0.0 },
+            new[] { 0.0, 1.0 },
+            new[] { 0.0, 0.0 },
+        };
 
         string filename = "not.json";
 
