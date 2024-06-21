@@ -272,7 +272,7 @@ namespace Perceptron
                                     $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                                 break;
                             case Logging.FileStream:
-                                using (StreamWriter sw = new StreamWriter("log.log"))
+                                using (StreamWriter sw = new StreamWriter("log.log", true))
                                 {
                                     sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                         $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
