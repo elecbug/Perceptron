@@ -9,9 +9,9 @@ namespace Perceptron
 
         public int InputCount { get; private set; }
         public int OutputCount { get; private set; }
-        public List<Func<double, double>> ActivationFunctions { get; private set; }
+        public List<Func<double[], double[]>> ActivationFunctions { get; private set; }
 
-        public Classification(int inputCount, int[] layer, List<Func<double, double>> activationFunctions)
+        public Classification(int inputCount, int[] layer, List<Func<double[], double[]>> activationFunctions)
         {
             InputCount = inputCount;
             OutputCount = layer.Last();
@@ -76,19 +76,15 @@ namespace Perceptron
 
                 for (int p = 0; p < copied[l].Count; p++)
                 {
-                    double sum = 0;
-                    
                     for (int w = 0; w < copied[l][p].Count - 1; w++)
                     {
-                        sum += copied[l][p][w] * before[w];
+                        next[p] += copied[l][p][w] * before[w];
                     }
 
-                    sum += copied[l][p].Last();
-
-                    next[p] = ActivationFunctions[l](sum);
+                    next[p] += copied[l][p].Last();
                 }
 
-                before = next;
+                before = ActivationFunctions[l](next);
             }
 
             output = before;

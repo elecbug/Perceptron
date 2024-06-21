@@ -2,7 +2,7 @@
 {
     private static void Main(string[] args)
     {
-        NumberTrain();
+        FourClassification();
     }
 
     private static void Logical()
@@ -10,7 +10,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             2,
             new int[] { 4, 2 },
-            new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -35,7 +35,7 @@
             classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 1000, 0.0000001, 0.001, 100);
+        classification.Learn(inputs, outputs, 300, 0.0000001, 0.001, 100);
 
         for (int i = 0; i < inputs.Count; i++)
         {
@@ -57,7 +57,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             64,
             new int[] { 64, 48, 32, 16, 10 },
-            new List<Func<double, double>> 
+            new List<Func<double[], double[]>> 
             {
                 Perceptron.ActFunc.Selu, 
                 Perceptron.ActFunc.Selu,
@@ -148,7 +148,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             3,
             new int[] { 12, 8 },
-            new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -179,7 +179,7 @@
             classification.Load("three-bit-classification.json");
         }
 
-        classification.Learn(inputs, outputs, 100, 0.0000001, 0.001, 1000);
+        classification.Learn(inputs, outputs, 10, 0.0000001, 0.001, 1000);
 
         for (int i = 0; i < inputs.Count; i++)
         {
@@ -201,7 +201,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
             new int[] { 64, 64, 16 },
-            new List<Func<double, double>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
