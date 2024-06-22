@@ -2,7 +2,7 @@
 {
     private static void Main(string[] args)
     {
-        TwoClassification();
+        FourClassification();
     }
 
     private static void LogicalFromOne()
@@ -247,7 +247,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             3,
             new int[] { 12, 8 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -306,7 +306,7 @@
     {
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
-            new int[] { 32, 16 },
+            new int[] { 8, 24, 16 },
             new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
@@ -351,30 +351,33 @@
 
         string filename = "four-bit-classification.json";
 
-        if (File.Exists(filename))
+        while (true) 
         {
-            classification.Load(filename);
-        }
-
-        classification.Learn(inputs, outputs, 100,
-            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
-            filename);
-
-        for (int i = 0; i < inputs.Count; i++)
-        {
-            classification.Test(inputs[i], out double[] o);
-
-            using (StreamWriter sw = new StreamWriter("log.log", true))
+            if (File.Exists(filename))
             {
-                foreach (var x in o)
-                {
-                    sw.WriteLine(x.ToString("0.000-000-000-000"));
-                }
-
-                sw.WriteLine();
+                classification.Load(filename);
             }
-        }
 
-        classification.Save(filename);
+            classification.Learn(inputs, outputs, 1,
+                Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+                filename);
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                using (StreamWriter sw = new StreamWriter("log.log", true))
+                {
+                    foreach (var x in o)
+                    {
+                        sw.WriteLine(x.ToString("0.000-000-000-000"));
+                    }
+
+                    sw.WriteLine();
+                }
+            }
+
+            classification.Save(filename);
+        }
     }
 }
