@@ -2,7 +2,7 @@
 {
     private static void Main(string[] args)
     {
-        TwoClassification();
+        FourClassification();
     }
 
     private static void LogicalFromOne()
@@ -280,7 +280,7 @@
             classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 100,
+        classification.Learn(inputs, outputs, 50,
             Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
             filename);
 
@@ -356,7 +356,7 @@
             classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 100,
+        classification.Learn(inputs, outputs, 10,
             Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
             filename);
 
