@@ -356,7 +356,7 @@
             classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 10,
+        classification.Learn(inputs, outputs, 100,
             Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
             filename);
 
