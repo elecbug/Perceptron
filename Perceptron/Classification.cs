@@ -349,6 +349,8 @@ namespace Perceptron
 
                         time = DateTime.Now.Ticks - time;
                         wCount++;
+
+                        average *= ((wCount - 1) / wCount);
                         average += time / wCount;
 
                         if (checkTime == false)
