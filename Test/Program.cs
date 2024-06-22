@@ -39,7 +39,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -86,7 +86,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -133,7 +133,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -180,7 +180,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -273,7 +273,7 @@
         for (int j = 0; j < 1000; j++)
         {
             classification.Learn(inputs.GetRange(j, 20), outputs.GetRange(j, 20), 1,
-                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -321,7 +321,7 @@
         }
 
         classification.Learn(inputs, outputs, 200,
-            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+            Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -379,7 +379,7 @@
         }
 
         classification.Learn(inputs, outputs, 50,
-            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+            Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -457,7 +457,7 @@
             }
 
             classification.Learn(inputs, outputs, 1,
-                Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+                Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)

@@ -7,7 +7,7 @@ namespace Perceptron
     /// <summary>
     /// 분류 작업을 위해 설계된 Deep-learning Core
     /// </summary>
-    public partial class Classification
+    public class Classification
     {
         /// <summary>
         /// 가중치, Weights[Layer][Perceptron Number of Layer][Weight Number of Perceoptorn]의 구조
