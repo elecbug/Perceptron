@@ -292,6 +292,7 @@ namespace Perceptron
         /// 한 Epoch
         /// </summary>
         /// <param name="epoch"> 지금 몇번째 Epoch인지/출력을 위해 사용 </param>
+        /// <param name="totalEpoch"> 총 Epoch 수 </param>
         /// <param name="inputs"> 최적화 할 모든 입력 </param>
         /// <param name="outputs"> 최적화 할 모든 출력 </param>
         /// <param name="omicron"> 미분소, 미분을 위한 분모</param>
@@ -300,7 +301,7 @@ namespace Perceptron
         /// <param name="logging"> Log를 생성할 위치 </param>
         /// <param name="optimizer"> 사용할 최적화 함수 </param>
         /// <param name="checkTime"> 현재 시간과 예측치를 Log로 출력할 지 여부 </param>
-        private void Epoch(int epoch, List<double[]> inputs, List<double[]> outputs, 
+        private void Epoch(int totalEpoch, int epoch, List<double[]> inputs, List<double[]> outputs, 
             double omicron, double alpha, int jump, Logging logging, Optimizer optimizer, bool checkTime)
         {
             // 새 가중치들의 임시 저장 공간
@@ -350,7 +351,7 @@ namespace Perceptron
                         time = DateTime.Now.Ticks - time;
                         wCount++;
 
-                        average *= ((wCount - 1) / wCount);
+                        average *= (wCount - 1) / (decimal)wCount;
                         average += time / wCount;
 
                         if (checkTime == false)
@@ -378,20 +379,25 @@ namespace Perceptron
                         {
                             DateTime maybe = DateTime.Now.AddTicks((long)((allWeightCount - wCount) * average));
 
+                            for (int e = epoch + 1; e < totalEpoch; e++)
+                            {
+                                maybe = maybe.AddTicks((long)(allWeightCount * average));
+                            }
+
                             switch (logging)
                             {
                                 case Logging.Debug:
-                                    Debug.WriteLine($"[{maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                    Debug.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                         $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                                     break;
                                 case Logging.Console:
-                                    Console.WriteLine($"[{maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                    Console.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                         $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                                     break;
                                 case Logging.FileStream:
                                     using (StreamWriter sw = new StreamWriter("log.log", true))
                                     {
-                                        sw.WriteLine($"[{maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                        sw.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                             $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                                     }
                                     break;
@@ -430,7 +436,7 @@ namespace Perceptron
 
             for (int i = 0; i < epoch; i++)
             {
-                Epoch(i, inputs, outputs, omicron, alpha, jump, logging, optimizer, checkTime);
+                Epoch(epoch, i, inputs, outputs, omicron, alpha, jump, logging, optimizer, checkTime);
 
                 if (autoSave != "")
                 {
