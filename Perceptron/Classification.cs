@@ -6,7 +6,7 @@ namespace Perceptron
     /// <summary>
     /// 분류 작업을 위해 설계된 Deep-learning Core
     /// </summary>
-    public class Classification
+    public partial class Classification
     {
         /// <summary>
         /// 가중치, Weights[Layer][Perceptron Number of Layer][Weight Number of Perceoptorn]의 구조
@@ -125,8 +125,7 @@ namespace Perceptron
         }
 
         /// <summary>
-        /// 최적화 함수
-        /// * 현재는 GradientDescent만 지원
+        /// Gradient Descent 최적화 함수
         /// * 현재는 Mini Batch가 지원되지 않아, 사용하는 쪽에서 입력을 묶어서 임의로 Mini Batch를 만들어 사용해야 함
         /// </summary>
         /// <param name="inputs"> 최적화 할 모든 입력 </param>
@@ -200,88 +199,94 @@ namespace Perceptron
             return weight;
         }
 
-        /* private void ThreadEpoch(int epoch, double[] input, double[] output, double omicron, double alpha, int jump, int maxCount)
+        /// <summary>
+        /// Adam 최적화 함수
+        /// </summary>
+        /// <param name="inputs"> 최적화 할 모든 입력 </param>
+        /// <param name="outputs"> 최적화 할 모든 출력 </param>
+        /// <param name="omicron"> 미분소, 미분을 위한 분모 </param>
+        /// <param name="alpha"> 학습률 </param>
+        /// <param name="jump"> 회당 학습 수, 학습률의 역수를 추천 </param>
+        /// <param name="l"> GD가 진행되는 Layer </param>
+        /// <param name="p"> GD가 진행되는 Perceptron </param>
+        /// <param name="w"> GD가 진행되는 Weight </param>
+        /// <param name="beta1"> Adam Parameter beta1 </param>
+        /// <param name="beta2"> Adam Parameter beta2 </param>
+        /// <param name="epsilon"> Adam Parameter epsilon </param>
+        /// <returns></returns>
+        private double Adam(List<double[]> inputs, List<double[]> outputs,
+            double omicron, double alpha, int jump, int l, int p, int w,
+            double beta1 = 0.9, double beta2 = 0.999, double epsilon = 1e-8)
         {
-            List<List<List<double>>> newWeights = new List<List<List<double>>>();
+            // 원본에 지장을 안주기 위해 사본 생성
+            List<List<List<double>>> copied = new List<List<List<double>>>();
 
             for (int ll = 0; ll < Weights.Count; ll++)
             {
-                newWeights.Add(new List<List<double>>());
+                copied.Add(new List<List<double>>());
 
                 for (int pp = 0; pp < Weights[ll].Count; pp++)
                 {
-                    newWeights[ll].Add(new List<double>());
+                    copied[ll].Add(new List<double>());
 
                     for (int ww = 0; ww < Weights[ll][pp].Count; ww++)
                     {
-                        newWeights[ll][pp].Add(Weights[ll][pp][ww]);
+                        copied[ll][pp].Add(Weights[ll][pp][ww]);
                     }
                 }
             }
 
-            Thread[] ts = new Thread[maxCount];
-            object[] locker = new object[maxCount];
-            (bool, int, int, int)[] parameters = new (bool, int, int, int)[maxCount];
+            double weight = copied[l][p][w];
 
-            for (int i = 0; i < ts.Length; i++)
+            double m = 0;
+            double v = 0;
+            int t = 0;
+
+            for (int i = 0; i < jump; i++)
             {
-                locker[i] = new object();
+                double gradientSum = 0;
 
-                int x = i;
-                ts[i] = new Thread(() =>
+                for (int j = 0; j < inputs.Count; j++)
                 {
-                    while (true)
+                    double[] input = inputs[j];
+                    double[] output = outputs[j];
+
+                    copied[l][p][w] += omicron;
+                    Run(copied, input, out double[] oPlus);
+
+                    copied[l][p][w] -= 2 * omicron;
+                    Run(copied, input, out double[] oMinus);
+
+                    copied[l][p][w] += omicron;
+
+                    double errorPlus = 0;
+                    double errorMinus = 0;
+
+                    for (int o = 0; o < output.Length; o++)
                     {
-                        while (parameters[x].Item1 == false) ;
-
-                        lock (locker[x])
-                        {
-                            int l = parameters[x].Item2, p = parameters[x].Item3, w = parameters[x].Item4;
-
-                            newWeights[l][p][w] = GradientDescent(input, output, omicron, alpha, jump, l, p, w);
-                            Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-
-                            parameters[x].Item1 = false;
-                        }
+                        errorPlus += (output[o] - oPlus[o]) * (output[o] - oPlus[o]);
+                        errorMinus += (output[o] - oMinus[o]) * (output[o] - oMinus[o]);
                     }
-                });
 
-                ts[i].Start();
-            }
-
-            for (int l = Weights.Count - 1; l >= 0; l--)
-            {
-                for (int p = 0; p < Weights[l].Count; p++)
-                {
-                    for (int w = 0; w < Weights[l][p].Count; w++)
-                    {
-                        for (int i = 0; i < locker.Length; i++)
-                        {
-                            if (parameters[i].Item1 == false)
-                            {
-                                lock (locker[i])
-                                {
-                                    parameters[i] = (true, l, p, w);
-                                }
-
-                                break;
-                            }
-                            if (i == locker.Length - 1)
-                            {
-                                i = -1;
-                            }
-                        }
-                    }
+                    gradientSum += (errorPlus - errorMinus) / (2 * omicron);
                 }
 
-                for (int i = 0; i < locker.Length; i++)
-                {
-                    while (parameters[i].Item1 == true) ;
-                }
-             
-                Weights = newWeights;
+                double averageGradient = gradientSum / inputs.Count;
+
+                // Adam 업데이트
+                t++;
+                m = beta1 * m + (1 - beta1) * averageGradient;
+                v = beta2 * v + (1 - beta2) * (averageGradient * averageGradient);
+
+                double mHat = m / (1 - Math.Pow(beta1, t));
+                double vHat = v / (1 - Math.Pow(beta2, t));
+
+                weight -= alpha * mHat / (Math.Sqrt(vHat) + epsilon);
+                copied[l][p][w] = weight;
             }
-        } */
+
+            return weight;
+        }
 
         /// <summary>
         /// 한 Epoch
@@ -293,8 +298,9 @@ namespace Perceptron
         /// <param name="alpha"> 학습률 </param>
         /// <param name="jump"> 회당 학습 수, 학습률의 역수를 추천</param>
         /// <param name="logging"> Log를 생성할 위치 </param>
+        /// <param name="optimizer"> 사용할 최적화 함수 </param>
         private void Epoch(int epoch, List<double[]> inputs, List<double[]> outputs, 
-            double omicron, double alpha, int jump, Logging logging)
+            double omicron, double alpha, int jump, Logging logging, Optimizer optimizer)
         {
             // 새 가중치들의 임시 저장 공간
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
@@ -321,7 +327,15 @@ namespace Perceptron
                 {
                     for (int w = 0; w < Weights[l][p].Count; w++)
                     {
-                        newWeights[l][p][w] = GradientDescent(inputs, outputs, omicron, alpha, jump, l, p, w);
+                        switch (optimizer)
+                        {
+                            case Optimizer.GradientDescent:
+                                newWeights[l][p][w] = GradientDescent(inputs, outputs, omicron, alpha, jump, l, p, w);
+                                break;
+                            case Optimizer.Adam:
+                                newWeights[l][p][w] = Adam(inputs, outputs, omicron, alpha, jump, l, p, w);
+                                break;
+                        }
 
                         switch (logging)
                         {
@@ -349,25 +363,6 @@ namespace Perceptron
         }
 
         /// <summary>
-        /// Log를 생성할 위치
-        /// </summary>
-        public enum Logging
-        {
-            /// <summary>
-            /// Visual Stdio Debug(Output) 창에 출력
-            /// </summary>
-            Debug,
-            /// <summary>
-            /// Console 창에 출력
-            /// </summary>
-            Console,
-            /// <summary>
-            /// "log.log"라는 파일에 출력
-            /// </summary>
-            FileStream,
-        }
-
-        /// <summary>
         /// 해당 입출력 값으로 모델을 학습
         /// </summary>
         /// <param name="inputs"> 최적화 할 모든 입력</param>
@@ -377,9 +372,13 @@ namespace Perceptron
         /// <param name="alpha"> 학습률, 기본 값은 0.001 </param>
         /// <param name="jump"> 회당 학습 수, 학습률의 역수를 추천, 기본 값은 1000 </param>
         /// <param name="logging"> Log를 생성할 위치 </param>
+        /// <param name="optimizer"> 사용할 최적화 함수 </param>
+        /// <param name="autoSave"> 자동 저장 파일, 빈 문자열 일 시 자동 저장 되지 않음 </param>
         /// <exception cref="ArgumentException"> 입력 배열의 전체 갯수와 출력 배열의 전체 갯수가 다를 시 발생 </exception>
-        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch, 
-            double omicron = 0.0000001, double alpha = 0.001, int jump = 1000, Logging logging = Logging.Debug)
+        public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch,
+            Logging logging, Optimizer optimizer,
+            string autoSave = "",
+            double omicron = 0.0000001, double alpha = 0.001, int jump = 1000)
         {
             if (inputs.Count != outputs.Count)
             {
@@ -388,7 +387,12 @@ namespace Perceptron
 
             for (int i = 0; i < epoch; i++)
             {
-                Epoch(i, inputs, outputs, omicron, alpha, jump, logging);
+                Epoch(i, inputs, outputs, omicron, alpha, jump, logging, optimizer);
+
+                if (autoSave != "")
+                {
+                    Save(autoSave);
+                }
             }
         }
 

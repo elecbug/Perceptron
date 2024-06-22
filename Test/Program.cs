@@ -2,7 +2,7 @@
 {
     private static void Main(string[] args)
     {
-        LogicalFromOne();
+        TwoClassification();
     }
 
     private static void LogicalFromOne()
@@ -35,7 +35,9 @@
             classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 5000, 0.0000001, 0.001, 100);
+        classification.Learn(inputs, outputs, 5000, Perceptron.Classification.Logging.Console,
+            Perceptron.Classification.Optimizer.Adam, 
+            filename);
 
         for (int i = 0; i < inputs.Count; i++)
         {
@@ -48,8 +50,6 @@
 
             Console.WriteLine();
         }
-
-        classification.Save(filename);
     }
 
     private static void Logical()
@@ -82,7 +82,9 @@
             classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 300, 0.0000001, 0.001, 100);
+        classification.Learn(inputs, outputs, 300, 
+            Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+            filename);
 
         for (int i = 0; i < inputs.Count; i++)
         {
@@ -117,11 +119,11 @@
         List<double[]> inputs = new List<double[]>();
         List<double[]> outputs = new List<double[]>();
 
-        string file = "train-num.json";
+        string filename = "train-num.json";
 
-        if (File.Exists(file))
+        if (File.Exists(filename))
         {
-            classification.Load(file);
+            classification.Load(filename);
 
             for (int i = 0; i < inputs.Count; i++)
             {
@@ -172,7 +174,9 @@
 
         for (int j = 0; j < 1000; j++)
         {
-            classification.Learn(inputs.GetRange(j, 20), outputs.GetRange(j, 20), 1, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.Console);
+            classification.Learn(inputs.GetRange(j, 20), outputs.GetRange(j, 20), 1,
+                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                filename);
 
             for (int i = 0; i < inputs.Count; i++)
             {
@@ -185,8 +189,6 @@
 
                 Console.WriteLine();
             }
-
-            classification.Save(file);
         }
     }
 
@@ -213,14 +215,16 @@
             new[] { 0.0, 0.0, 0.0 },
         };
 
-        string file = "two-bit-classification.json";
+        string filename = "two-bit-classification.json";
 
-        if (File.Exists(file))
+        if (File.Exists(filename))
         {
-            classification.Load(file);
+            classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 100, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.Console);
+        classification.Learn(inputs, outputs, 100,
+            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+            filename);
 
         for (int i = 0; i < inputs.Count; i++)
         {
@@ -236,8 +240,6 @@
                 sw.WriteLine();
             }
         }
-
-        classification.Save(file);
     }
 
     private static void ThreeClassification()
@@ -271,12 +273,16 @@
             new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
         };
 
-        if (File.Exists("three-bit-classification.json"))
+        string filename = "three-bit-classification.json";
+
+        if (File.Exists(filename))
         {
-            classification.Load("three-bit-classification.json");
+            classification.Load(filename);
         }
 
-        classification.Learn(inputs, outputs, 100, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.FileStream);
+        classification.Learn(inputs, outputs, 100,
+            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+            filename);
 
         for (int i = 0; i < inputs.Count; i++)
         {
@@ -293,7 +299,7 @@
             }
         }
 
-        classification.Save("three-bit-classification.json");
+        classification.Save(filename);
     }
 
     private static void FourClassification()
@@ -343,46 +349,32 @@
             new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 }
         };
 
-        if (File.Exists("four-bit-classification.json"))
+        string filename = "four-bit-classification.json";
+
+        if (File.Exists(filename))
         {
-            classification.Load("four-bit-classification.json");
+            classification.Load(filename);
+        }
 
-            for (int i = 0; i < inputs.Count; i++)
+        classification.Learn(inputs, outputs, 100,
+            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
+            filename);
+
+        for (int i = 0; i < inputs.Count; i++)
+        {
+            classification.Test(inputs[i], out double[] o);
+
+            using (StreamWriter sw = new StreamWriter("log.log", true))
             {
-                classification.Test(inputs[i], out double[] o);
-
-                using (StreamWriter sw = new StreamWriter("log.log", true))
+                foreach (var x in o)
                 {
-                    foreach (var x in o)
-                    {
-                        sw.WriteLine(x.ToString("0.000-000-000-000"));
-                    }
-
-                    sw.WriteLine();
+                    sw.WriteLine(x.ToString("0.000-000-000-000"));
                 }
+
+                sw.WriteLine();
             }
         }
 
-        for (int j = 0; j < 1000; j++)
-        {
-            classification.Learn(inputs, outputs, 1, 0.0000001, 0.001, 1000, Perceptron.Classification.Logging.FileStream);
-
-            for (int i = 0; i < inputs.Count; i++)
-            {
-                classification.Test(inputs[i], out double[] o);
-
-                using (StreamWriter sw = new StreamWriter("log.log", true))
-                {
-                    foreach (var x in o)
-                    {
-                        sw.WriteLine(x.ToString("0.000-000-000-000"));
-                    }
-
-                    sw.WriteLine();
-                }
-            }
-
-            classification.Save("four-bit-classification.json");
-        }
+        classification.Save(filename);
     }
 }
