@@ -247,7 +247,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             3,
             new int[] { 12, 8 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -307,7 +307,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
             new int[] { 8, 24, 16 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
