@@ -2,103 +2,201 @@
 {
     private static void Main(string[] args)
     {
+        TwoClassification();
+        ThreeClassification();
         FourClassification();
-    }
-
-    private static void LogicalFromOne()
-    {
-        Perceptron.Classification classification = new Perceptron.Classification(
-            2,
-            new int[] { 4, 1 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Sigmoid, Perceptron.ActFunc.Sigmoid }
-        );
-
-        List<double[]> inputs = new List<double[]>()
-        {
-            new[] { 0.0, 0.0 },
-            new[] { 0.0, 1.0 },
-            new[] { 1.0, 0.0 },
-            new[] { 1.0, 1.0 }
-        };
-        List<double[]> outputs = new List<double[]>()
-        {
-            new[] { 0.0 },
-            new[] { 1.0 },
-            new[] { 1.0 },
-            new[] { 0.0 },
-        };
-
-        string filename = "xor-four.json";
-
-        if (File.Exists(filename))
-        {
-            classification.Load(filename);
-        }
-
-        classification.Learn(inputs, outputs, 5000, Perceptron.Classification.Logging.Console,
-            Perceptron.Classification.Optimizer.Adam, 
-            filename);
-
-        for (int i = 0; i < inputs.Count; i++)
-        {
-            classification.Test(inputs[i], out double[] o);
-
-            foreach (var x in o)
-            {
-                Console.WriteLine(x.ToString("0.000-000-000-000"));
-            }
-
-            Console.WriteLine();
-        }
     }
 
     private static void Logical()
     {
-        Perceptron.Classification classification = new Perceptron.Classification(
-            2,
-            new int[] { 4, 2 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
-        );
+        {
+            Perceptron.Classification classification = new Perceptron.Classification(
+                2,
+                new int[] { 4, 2 },
+                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            );
 
-        List<double[]> inputs = new List<double[]>()
+            List<double[]> inputs = new List<double[]>()
+            {
+                new[] { 0.0, 0.0 },
+                new[] { 0.0, 1.0 },
+                new[] { 1.0, 0.0 },
+                new[] { 1.0, 1.0 }
+            };
+                List<double[]> outputs = new List<double[]>()
+            {
+                new[] { 1.0, 1.0 },
+                new[] { 1.0, 0.0 },
+                new[] { 0.0, 1.0 },
+                new[] { 0.0, 0.0 },
+            };
+
+            string filename = "not.json";
+
+            if (File.Exists(filename))
+            {
+                classification = Perceptron.Classification.Load(filename);
+            }
+
+            classification.Learn(inputs, outputs, 300,
+                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                filename);
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                foreach (var x in o)
+                {
+                    Console.WriteLine(x.ToString("0.000-000-000-000"));
+                }
+
+                Console.WriteLine();
+            }
+
+            classification.Save(filename);
+        }
+        {
+            Perceptron.Classification classification = new Perceptron.Classification(
+                2,
+                new int[] { 4, 2 },
+                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            );
+
+            List<double[]> inputs = new List<double[]>()
         {
             new[] { 0.0, 0.0 },
             new[] { 0.0, 1.0 },
             new[] { 1.0, 0.0 },
             new[] { 1.0, 1.0 }
         };
-        List<double[]> outputs = new List<double[]>()
+            List<double[]> outputs = new List<double[]>()
         {
-            new[] { 1.0, 1.0 },
-            new[] { 1.0, 0.0 },
-            new[] { 0.0, 1.0 },
             new[] { 0.0, 0.0 },
+            new[] { 1.0, 0.0 },
+            new[] { 1.0, 0.0 },
+            new[] { 1.0, 0.0 },
         };
 
-        string filename = "not.json";
+            string filename = "or.json";
 
-        if (File.Exists(filename))
-        {
-            classification.Load(filename);
-        }
-
-        classification.Learn(inputs, outputs, 300, 
-            Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
-            filename);
-
-        for (int i = 0; i < inputs.Count; i++)
-        {
-            classification.Test(inputs[i], out double[] o);
-
-            foreach (var x in o)
+            if (File.Exists(filename))
             {
-                Console.WriteLine(x.ToString("0.000-000-000-000"));
+                classification = Perceptron.Classification.Load(filename);
             }
 
-            Console.WriteLine();
-        }
+            classification.Learn(inputs, outputs, 300,
+                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                filename);
 
-        classification.Save(filename);
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                foreach (var x in o)
+                {
+                    Console.WriteLine(x.ToString("0.000-000-000-000"));
+                }
+
+                Console.WriteLine();
+            }
+
+            classification.Save(filename);
+        }
+        {
+            Perceptron.Classification classification = new Perceptron.Classification(
+                2,
+                new int[] { 4, 2 },
+                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            );
+
+            List<double[]> inputs = new List<double[]>()
+            {
+                new[] { 0.0, 0.0 },
+                new[] { 0.0, 1.0 },
+                new[] { 1.0, 0.0 },
+                new[] { 1.0, 1.0 }
+            };
+                List<double[]> outputs = new List<double[]>()
+            {
+                new[] { 0.0, 1.0 },
+                new[] { 0.0, 1.0 },
+                new[] { 0.0, 1.0 },
+                new[] { 1.0, 0.0 },
+            };
+
+            string filename = "and.json";
+
+            if (File.Exists(filename))
+            {
+                classification = Perceptron.Classification.Load(filename);
+            }
+
+            classification.Learn(inputs, outputs, 300,
+                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                filename);
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                foreach (var x in o)
+                {
+                    Console.WriteLine(x.ToString("0.000-000-000-000"));
+                }
+
+                Console.WriteLine();
+            }
+
+            classification.Save(filename);
+        }
+        {
+            Perceptron.Classification classification = new Perceptron.Classification(
+                2,
+                new int[] { 4, 2 },
+                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+            );
+
+            List<double[]> inputs = new List<double[]>()
+            {
+                new[] { 0.0, 0.0 },
+                new[] { 0.0, 1.0 },
+                new[] { 1.0, 0.0 },
+                new[] { 1.0, 1.0 }
+            };
+                List<double[]> outputs = new List<double[]>()
+            {
+                new[] { 0.0, 1.0 },
+                new[] { 1.0, 0.0 },
+                new[] { 1.0, 0.0 },
+                new[] { 0.0, 1.0 },
+            };
+
+            string filename = "xor.json";
+
+            if (File.Exists(filename))
+            {
+                classification = Perceptron.Classification.Load(filename);
+            }
+
+            classification.Learn(inputs, outputs, 300,
+                Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+                filename);
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                foreach (var x in o)
+                {
+                    Console.WriteLine(x.ToString("0.000-000-000-000"));
+                }
+
+                Console.WriteLine();
+            }
+
+            classification.Save(filename);
+        }
     }
 
     private static void NumberTrain()
@@ -106,7 +204,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             64,
             new int[] { 64, 48, 32, 16, 10 },
-            new List<Func<double[], double[]>> 
+            new List<Perceptron.ActFunc> 
             {
                 Perceptron.ActFunc.Selu, 
                 Perceptron.ActFunc.Selu,
@@ -123,7 +221,7 @@
 
         if (File.Exists(filename))
         {
-            classification.Load(filename);
+            classification = Perceptron.Classification.Load(filename);
 
             for (int i = 0; i < inputs.Count; i++)
             {
@@ -197,7 +295,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             2,
             new int[] { 6, 4 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -219,11 +317,11 @@
 
         if (File.Exists(filename))
         {
-            classification.Load(filename);
+            classification = Perceptron.Classification.Load(filename);
         }
 
         classification.Learn(inputs, outputs, 200,
-            Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -247,7 +345,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             3,
             new int[] { 12, 8 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -277,11 +375,11 @@
 
         if (File.Exists(filename))
         {
-            classification.Load(filename);
+            classification = Perceptron.Classification.Load(filename);
         }
 
         classification.Learn(inputs, outputs, 50,
-            Perceptron.Classification.Logging.Console, Perceptron.Classification.Optimizer.Adam,
+            Perceptron.Classification.Logging.FileStream, Perceptron.Classification.Optimizer.Adam,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -307,7 +405,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
             new int[] { 8, 24, 16 },
-            new List<Func<double[], double[]>> { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -355,7 +453,7 @@
         {
             if (File.Exists(filename))
             {
-                classification.Load(filename);
+                classification = Perceptron.Classification.Load(filename);
             }
 
             classification.Learn(inputs, outputs, 1,

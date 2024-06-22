@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection.Emit;
 using System.Text.Json;
 
 namespace Perceptron
@@ -26,7 +27,7 @@ namespace Perceptron
         /// <summary>
         /// Layer 별 활성화 함수
         /// </summary>
-        public List<Func<double[], double[]>> ActivationFunctions { get; private set; }
+        public List<ActFunc> ActivationFunctions { get; private set; }
 
         /// <summary>
         /// Model을 생성하고 초기화
@@ -35,7 +36,7 @@ namespace Perceptron
         /// <param name="layer"> Layer의 구조, layer.Length는 전체 Layer의 수, layer[Index]는 각 Layer의 Perceptron의 수 </param>
         /// <param name="activationFunctions"> 활성화 함수의 List </param>
         /// <exception cref="ArgumentException"> Layer의 숫자와 활성화 함수의 숫자가 일치하지 않을 시 발생 </exception>
-        public Classification(int inputCount, int[] layer, List<Func<double[], double[]>> activationFunctions)
+        public Classification(int inputCount, int[] layer, List<ActFunc> activationFunctions)
         {
             InputCount = inputCount;
             OutputCount = layer.Last();
@@ -89,6 +90,23 @@ namespace Perceptron
         }
 
         /// <summary>
+        /// Load 함수를 통해 호출되는 생성자
+        /// </summary>
+        /// <param name="structure"></param>
+        private Classification(FileStructure structure) 
+        {
+            Weights = structure.Weights;
+            InputCount = structure.InputCount;
+            OutputCount = structure.OutputCount;
+            ActivationFunctions = structure.ActivationFunctions; 
+            
+            if (ActivationFunctions.Count != Weights.Count)
+            {
+                throw new ArgumentException("Activation function's count and layer's count are not samed");
+            }
+        }
+
+        /// <summary>
         /// 한 번의 실행 결과에 대해, 하나의 입력에서 나오는 출력 결과를 반환
         /// </summary>
         /// <param name="copied"> 전역 가중치를 복사한 매개 변수 </param>
@@ -118,7 +136,7 @@ namespace Perceptron
                     next[p] += copied[l][p].Last();
                 }
 
-                before = ActivationFunctions[l](next);
+                before = ActFuncImpl.GetActivation(ActivationFunctions[l])(next);
             }
 
             output = before;
@@ -463,7 +481,15 @@ namespace Perceptron
         {
             using(StreamWriter sw = new StreamWriter(filename))
             {
-                string json = JsonSerializer.Serialize(Weights);
+                FileStructure structure = new FileStructure()
+                {
+                    Weights = Weights,
+                    InputCount = InputCount,
+                    OutputCount = OutputCount,
+                    ActivationFunctions = ActivationFunctions,
+                };
+
+                string json = JsonSerializer.Serialize(structure);
     
                 sw.Write(json);
             }
@@ -473,14 +499,25 @@ namespace Perceptron
         /// Json 형태의 가중치를 불러와 세팅
         /// </summary>
         /// <param name="filename"> 불러올 파일 위치 </param>
-        public void Load(string filename)
+        public static Classification Load(string filename)
         {
             using (StreamReader sr = new StreamReader(filename))
             {
                 string json = sr.ReadToEnd();
 
-                Weights = JsonSerializer.Deserialize<List<List<List<double>>>>(json)!;
+                FileStructure structure = JsonSerializer.Deserialize<FileStructure>(json)!;
+
+                Classification result = new Classification(structure);
+                return result;
             }
+        }
+
+        private class FileStructure
+        {
+            public required List<List<List<double>>> Weights { get; set; }
+            public required int InputCount { get; set; }
+            public required int OutputCount { get; set; }
+            public required List<ActFunc> ActivationFunctions { get; set; }
         }
     }
 }
