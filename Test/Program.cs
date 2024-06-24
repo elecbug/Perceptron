@@ -2,8 +2,6 @@
 {
     private static void Main(string[] args)
     {
-        TwoClassification();
-        ThreeClassification();
         FourClassification();
     }
 
@@ -404,8 +402,8 @@
     {
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
-            new int[] { 8, 24, 16 },
-            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new int[] { 20, 30, 25, 16 },
+            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
