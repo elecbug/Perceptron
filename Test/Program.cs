@@ -456,7 +456,45 @@
 
             classification.Learn(inputs, outputs, 1,
                 Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
-                filename);
+                filename, alpha: 0.1, jump: 10);
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                using (StreamWriter sw = new StreamWriter("log.log", true))
+                {
+                    foreach (var x in o)
+                    {
+                        sw.WriteLine(x.ToString("0.000-000-000-000"));
+                    }
+
+                    sw.WriteLine();
+                }
+            }
+
+            classification.Learn(inputs, outputs, 1,
+                Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+                filename, alpha: 0.01, jump: 100);
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                classification.Test(inputs[i], out double[] o);
+
+                using (StreamWriter sw = new StreamWriter("log.log", true))
+                {
+                    foreach (var x in o)
+                    {
+                        sw.WriteLine(x.ToString("0.000-000-000-000"));
+                    }
+
+                    sw.WriteLine();
+                }
+            }
+
+            classification.Learn(inputs, outputs, 1,
+                Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+                filename, alpha: 0.001, jump: 1000);
 
             for (int i = 0; i < inputs.Count; i++)
             {
