@@ -355,7 +355,7 @@ namespace Perceptron
             int wCount = 0;
             decimal average = 0;
 
-            var insideFunc = (int l, int p, int w) => 
+            Action<int, int, int> insideFunc = (int l, int p, int w) => 
             {
                 decimal time = DateTime.Now.Ticks;
 
@@ -369,12 +369,6 @@ namespace Perceptron
                         break;
                 }
 
-                time = DateTime.Now.Ticks - time;
-                wCount++;
-
-                average *= (wCount - 1) / (decimal)wCount;
-                average += time / wCount;
-
                 if (checkTime == false)
                 {
                     switch (logging)
@@ -387,7 +381,7 @@ namespace Perceptron
                             Console.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                 $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                             break;
-                        case Logging.FileStream:
+                        case Logging.LogFile:
                             using (StreamWriter sw = new StreamWriter("log.log", true))
                             {
                                 sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
@@ -398,7 +392,16 @@ namespace Perceptron
                 }
                 else
                 {
-                    DateTime maybe = DateTime.Now.AddTicks((long)((allWeightCount - wCount) * average));
+                    DateTime maybe;
+
+                    time = DateTime.Now.Ticks - time;
+
+                    wCount++;
+
+                    average *= (wCount - 1) / (decimal)wCount;
+                    average += time / wCount;
+                    
+                    maybe = DateTime.Now.AddTicks((long)((allWeightCount - wCount) * average));
 
                     for (int e = epoch + 1; e < totalEpoch; e++)
                     {
@@ -415,12 +418,12 @@ namespace Perceptron
                             Console.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                 $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                             break;
-                        case Logging.FileStream:
+                        case Logging.LogFile:
                             lock (locker)
                             {
                                 using (StreamWriter sw = new StreamWriter("log.log", true))
                                 {
-                                    sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                    sw.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
                                         $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
                                 }
                             }
@@ -470,8 +473,7 @@ namespace Perceptron
         /// <param name="parallelMode"> 병렬 모드를 사용할 지 여부, 기본 값은 true </param>
         /// <exception cref="ArgumentException"> 입력 배열의 전체 갯수와 출력 배열의 전체 갯수가 다를 시 발생 </exception>
         public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch,
-            Logging logging, Optimizer optimizer, bool parallelMode = true,
-            string autoSave = "", bool checkTime = true,
+            Logging logging, Optimizer optimizer, bool parallelMode = true, bool checkTime = true, string autoSave = "", 
             double omicron = 0.0000001, double alpha = 0.001, int jump = 1000)
         {
             if (inputs.Count != outputs.Count)
@@ -539,6 +541,9 @@ namespace Perceptron
             }
         }
 
+        /// <summary>
+        /// Json 파일로 저장하기 위한 규격
+        /// </summary>
         private class FileStructure
         {
             public required List<List<List<double>>> Weights { get; set; }

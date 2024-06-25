@@ -5,9 +5,24 @@
     /// </summary>
     public enum ActFunc
     {
+        /// <summary>
+        /// ReLU
+        /// </summary>
         Relu,
+
+        /// <summary>
+        /// SeLU
+        /// </summary>
         Selu,
+
+        /// <summary>
+        /// Sigmoid
+        /// </summary>
         Sigmoid,
+
+        /// <summary>
+        /// Softmax
+        /// </summary>
         Softmax,
     }
 }

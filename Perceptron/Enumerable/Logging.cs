@@ -9,13 +9,15 @@
         /// Visual Stdio Debug(Output) 창에 출력
         /// </summary>
         Debug,
+
         /// <summary>
         /// Console 창에 출력
         /// </summary>
         Console,
+
         /// <summary>
         /// "log.log"라는 파일에 출력
         /// </summary>
-        FileStream,
+        LogFile,
     }
 }
