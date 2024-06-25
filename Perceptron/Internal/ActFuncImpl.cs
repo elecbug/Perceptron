@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Perceptron.Enumerable;
 
-namespace Perceptron
+namespace Perceptron.Internal
 {
     /// <summary>
     /// 활성화 함수 구현

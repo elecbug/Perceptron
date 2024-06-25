@@ -1,4 +1,6 @@
-﻿public class Program
+﻿using Perceptron.Enumerable;
+
+public class Program
 {
     private static void Main(string[] args)
     {
@@ -11,7 +13,7 @@
             Perceptron.Classification classification = new Perceptron.Classification(
                 2,
                 new int[] { 4, 2 },
-                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+                new List<ActFunc>() { ActFunc.Selu, ActFunc.Sigmoid }
             );
 
             List<double[]> inputs = new List<double[]>()
@@ -37,7 +39,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
+                Logging.Console, Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -58,7 +60,7 @@
             Perceptron.Classification classification = new Perceptron.Classification(
                 2,
                 new int[] { 4, 2 },
-                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+                new List<ActFunc>() { ActFunc.Selu, ActFunc.Sigmoid }
             );
 
             List<double[]> inputs = new List<double[]>()
@@ -84,7 +86,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
+                Logging.Console, Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -105,7 +107,7 @@
             Perceptron.Classification classification = new Perceptron.Classification(
                 2,
                 new int[] { 4, 2 },
-                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+                new List<ActFunc>() { ActFunc.Selu, ActFunc.Sigmoid }
             );
 
             List<double[]> inputs = new List<double[]>()
@@ -131,7 +133,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
+                Logging.Console, Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -152,7 +154,7 @@
             Perceptron.Classification classification = new Perceptron.Classification(
                 2,
                 new int[] { 4, 2 },
-                new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Sigmoid }
+                new List<ActFunc>() { ActFunc.Selu, ActFunc.Sigmoid }
             );
 
             List<double[]> inputs = new List<double[]>()
@@ -178,7 +180,7 @@
             }
 
             classification.Learn(inputs, outputs, 300,
-                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
+                Logging.Console, Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -202,13 +204,13 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             64,
             new int[] { 64, 48, 32, 16, 10 },
-            new List<Perceptron.ActFunc> 
+            new List<ActFunc> 
             {
-                Perceptron.ActFunc.Selu, 
-                Perceptron.ActFunc.Selu,
-                Perceptron.ActFunc.Selu,
-                Perceptron.ActFunc.Selu,
-                Perceptron.ActFunc.Sigmoid 
+                ActFunc.Selu,
+                ActFunc.Selu,
+                ActFunc.Selu,
+                ActFunc.Selu,
+                ActFunc.Sigmoid 
             }
         );
 
@@ -271,7 +273,7 @@
         for (int j = 0; j < 1000; j++)
         {
             classification.Learn(inputs.GetRange(j, 20), outputs.GetRange(j, 20), 1,
-                Perceptron.Logging.Console, Perceptron.Optimizer.Adam,
+                Logging.Console, Optimizer.Adam,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -293,7 +295,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             2,
             new int[] { 6, 4 },
-            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<ActFunc>() { ActFunc.Selu, ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -319,7 +321,7 @@
         }
 
         classification.Learn(inputs, outputs, 200,
-            Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+            Logging.FileStream, Optimizer.Adam,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -343,7 +345,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             3,
             new int[] { 12, 8 },
-            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<ActFunc>() { ActFunc.Selu, ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -377,7 +379,7 @@
         }
 
         classification.Learn(inputs, outputs, 50,
-            Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+            Logging.FileStream, Optimizer.Adam,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -403,7 +405,7 @@
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
             new int[] { 20, 30, 25, 16 },
-            new List<Perceptron.ActFunc>() { Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Selu, Perceptron.ActFunc.Softmax }
+            new List<ActFunc>() { ActFunc.Selu, ActFunc.Selu, ActFunc.Selu, ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -455,7 +457,7 @@
             }
 
             classification.Learn(inputs, outputs, 1,
-                Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+                Logging.FileStream, Optimizer.Adam,
                 filename, alpha: 0.1, jump: 10);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -474,7 +476,7 @@
             }
 
             classification.Learn(inputs, outputs, 1,
-                Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+                Logging.FileStream, Optimizer.Adam,
                 filename, alpha: 0.01, jump: 100);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -493,7 +495,7 @@
             }
 
             classification.Learn(inputs, outputs, 1,
-                Perceptron.Logging.FileStream, Perceptron.Optimizer.Adam,
+                Logging.FileStream, Optimizer.Adam,
                 filename, alpha: 0.001, jump: 1000);
 
             for (int i = 0; i < inputs.Count; i++)

@@ -1,13 +1,13 @@
-﻿namespace Perceptron
+﻿namespace Perceptron.Enumerable
 {
     /// <summary>
     /// 활성화 함수 목록
     /// </summary>
     public enum ActFunc
     {
-        Relu, 
+        Relu,
         Selu,
-        Sigmoid, 
+        Sigmoid,
         Softmax,
     }
 }

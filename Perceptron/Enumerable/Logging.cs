@@ -1,4 +1,4 @@
-﻿namespace Perceptron
+﻿namespace Perceptron.Enumerable
 {
     /// <summary>
     /// Log를 생성할 위치

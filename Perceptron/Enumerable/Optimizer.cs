@@ -1,4 +1,4 @@
-﻿namespace Perceptron
+﻿namespace Perceptron.Enumerable
 {
     /// <summary>
     /// 사용할 최적화 함수
