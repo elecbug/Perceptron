@@ -37,8 +37,9 @@ namespace Perceptron
         /// <param name="inputCount"> 입력 배열의 길이 </param>
         /// <param name="layer"> Layer의 구조, layer.Length는 전체 Layer의 수, layer[Index]는 각 Layer의 Perceptron의 수 </param>
         /// <param name="activationFunctions"> 활성화 함수의 List </param>
+        /// <param name="seed"> 시드 값, 기본 값은 0 </param>
         /// <exception cref="ArgumentException"> Layer의 숫자와 활성화 함수의 숫자가 일치하지 않을 시 발생 </exception>
-        public Classification(int inputCount, int[] layer, List<ActFunc> activationFunctions)
+        public Classification(int inputCount, int[] layer, List<ActFunc> activationFunctions, int seed = 0)
         {
             InputCount = inputCount;
             OutputCount = layer.Last();
@@ -82,7 +83,7 @@ namespace Perceptron
 
                     for (int w = 0; w < Weights[l][p].Count; w++)
                     {
-                        Weights[l][p][w] = new Random().NextDouble();
+                        Weights[l][p][w] = new Random(seed++).NextDouble();
 
                         Debug.WriteLine($"    W: {w}");
                         Debug.WriteLine($"    {Weights[l][p][w]} ");
@@ -321,13 +322,18 @@ namespace Perceptron
         /// <param name="logging"> Log를 생성할 위치 </param>
         /// <param name="optimizer"> 사용할 최적화 함수 </param>
         /// <param name="checkTime"> 현재 시간과 예측치를 Log로 출력할 지 여부 </param>
+        /// <param name="parallelMode"> 병렬 모드를 사용할 지 여부 </param>
         private void Epoch(int totalEpoch, int epoch, List<double[]> inputs, List<double[]> outputs, 
-            double omicron, double alpha, int jump, Logging logging, Optimizer optimizer, bool checkTime)
+            double omicron, double alpha, int jump, Logging logging, Optimizer optimizer, bool parallelMode, bool checkTime)
         {
             // 새 가중치들의 임시 저장 공간
             List<List<List<double>>> newWeights = new List<List<List<double>>>();
 
+            // 총 가중치 개수
             int allWeightCount = 0;
+
+            // 파일 쓰기용 락
+            object locker = new object();
 
             for (int ll = 0; ll < Weights.Count; ll++)
             {
@@ -349,79 +355,97 @@ namespace Perceptron
             int wCount = 0;
             decimal average = 0;
 
+            var insideFunc = (int l, int p, int w) => 
+            {
+                decimal time = DateTime.Now.Ticks;
+
+                switch (optimizer)
+                {
+                    case Optimizer.GradientDescent:
+                        newWeights[l][p][w] = GradientDescent(inputs, outputs, omicron, alpha, jump, l, p, w);
+                        break;
+                    case Optimizer.Adam:
+                        newWeights[l][p][w] = Adam(inputs, outputs, omicron, alpha, jump, l, p, w);
+                        break;
+                }
+
+                time = DateTime.Now.Ticks - time;
+                wCount++;
+
+                average *= (wCount - 1) / (decimal)wCount;
+                average += time / wCount;
+
+                if (checkTime == false)
+                {
+                    switch (logging)
+                    {
+                        case Logging.Debug:
+                            Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                            break;
+                        case Logging.Console:
+                            Console.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                            break;
+                        case Logging.FileStream:
+                            using (StreamWriter sw = new StreamWriter("log.log", true))
+                            {
+                                sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                    $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    DateTime maybe = DateTime.Now.AddTicks((long)((allWeightCount - wCount) * average));
+
+                    for (int e = epoch + 1; e < totalEpoch; e++)
+                    {
+                        maybe = maybe.AddTicks((long)(allWeightCount * average));
+                    }
+
+                    switch (logging)
+                    {
+                        case Logging.Debug:
+                            Debug.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                            break;
+                        case Logging.Console:
+                            Console.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                            break;
+                        case Logging.FileStream:
+                            lock (locker)
+                            {
+                                using (StreamWriter sw = new StreamWriter("log.log", true))
+                                {
+                                    sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
+                                        $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
+                                }
+                            }
+                            break;
+                    }
+                }
+            };
+
             // 뒤쪽 레이어부터 최적화
             for (int l = Weights.Count - 1; l >= 0; l--)
             {
                 for (int p = 0; p < Weights[l].Count; p++)
                 {
-                    for (int w = 0; w < Weights[l][p].Count; w++)
+                    if (parallelMode == true)
                     {
-                        decimal time = DateTime.Now.Ticks;
-
-                        switch (optimizer)
+                        Parallel.For(0, Weights[l][p].Count, w =>
                         {
-                            case Optimizer.GradientDescent:
-                                newWeights[l][p][w] = GradientDescent(inputs, outputs, omicron, alpha, jump, l, p, w);
-                                break;
-                            case Optimizer.Adam:
-                                newWeights[l][p][w] = Adam(inputs, outputs, omicron, alpha, jump, l, p, w);
-                                break;
-                        }
-
-                        time = DateTime.Now.Ticks - time;
-                        wCount++;
-
-                        average *= (wCount - 1) / (decimal)wCount;
-                        average += time / wCount;
-
-                        if (checkTime == false)
+                            insideFunc(l, p, w);
+                        });
+                    }
+                    else
+                    {
+                        for (int w = 0; w < Weights[l][p].Count; w++)
                         {
-                            switch (logging)
-                            {
-                                case Logging.Debug:
-                                    Debug.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
-                                        $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                                    break;
-                                case Logging.Console:
-                                    Console.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
-                                        $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                                    break;
-                                case Logging.FileStream:
-                                    using (StreamWriter sw = new StreamWriter("log.log", true))
-                                    {
-                                        sw.WriteLine($"Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
-                                            $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                                    }
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            DateTime maybe = DateTime.Now.AddTicks((long)((allWeightCount - wCount) * average));
-
-                            for (int e = epoch + 1; e < totalEpoch; e++)
-                            {
-                                maybe = maybe.AddTicks((long)(allWeightCount * average));
-                            }
-
-                            switch (logging)
-                            {
-                                case Logging.Debug:
-                                    Debug.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
-                                        $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                                    break;
-                                case Logging.Console:
-                                    Console.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
-                                        $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                                    break;
-                                case Logging.FileStream:
-                                    using (StreamWriter sw = new StreamWriter("log.log", true))
-                                    {
-                                        sw.WriteLine($"[to {maybe}] Epoch: {epoch}, Layer: {l}, Perceptron: {p}, " +
-                                            $"Weight: {w}, NewWeight: {newWeights[l][p][w]}");
-                                    }
-                                    break;
-                            }
+                            insideFunc(l, p, w);
                         }
                     }
                 }
@@ -443,9 +467,10 @@ namespace Perceptron
         /// <param name="optimizer"> 사용할 최적화 함수 </param>
         /// <param name="autoSave"> 자동 저장 파일, 빈 문자열 일 시 자동 저장 되지 않음 </param>
         /// <param name="checkTime"> 현재 시간과 예측치를 Log로 출력할 지 여부 </param>
+        /// <param name="parallelMode"> 병렬 모드를 사용할 지 여부, 기본 값은 true </param>
         /// <exception cref="ArgumentException"> 입력 배열의 전체 갯수와 출력 배열의 전체 갯수가 다를 시 발생 </exception>
         public void Learn(List<double[]> inputs, List<double[]> outputs, int epoch,
-            Logging logging, Optimizer optimizer,
+            Logging logging, Optimizer optimizer, bool parallelMode = true,
             string autoSave = "", bool checkTime = true,
             double omicron = 0.0000001, double alpha = 0.001, int jump = 1000)
         {
@@ -456,7 +481,7 @@ namespace Perceptron
 
             for (int i = 0; i < epoch; i++)
             {
-                Epoch(epoch, i, inputs, outputs, omicron, alpha, jump, logging, optimizer, checkTime);
+                Epoch(epoch, i, inputs, outputs, omicron, alpha, jump, logging, optimizer, parallelMode, checkTime);
 
                 if (autoSave != "")
                 {

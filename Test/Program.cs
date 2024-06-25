@@ -1,4 +1,5 @@
 ﻿using Perceptron.Enumerable;
+using System.Runtime.Versioning;
 
 public class Program
 {
@@ -39,7 +40,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 300,
-                Logging.Console, Optimizer.Adam,
+                Logging.Console, Optimizer.Adam, true,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -86,7 +87,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 300,
-                Logging.Console, Optimizer.Adam,
+                Logging.Console, Optimizer.Adam, true,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -133,7 +134,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 300,
-                Logging.Console, Optimizer.Adam,
+                Logging.Console, Optimizer.Adam, true,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -180,7 +181,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 300,
-                Logging.Console, Optimizer.Adam,
+                Logging.Console, Optimizer.Adam, true,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -199,6 +200,8 @@ public class Program
         }
     }
 
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("linux")]
     private static void NumberTrain()
     {
         Perceptron.Classification classification = new Perceptron.Classification(
@@ -273,7 +276,7 @@ public class Program
         for (int j = 0; j < 1000; j++)
         {
             classification.Learn(inputs.GetRange(j, 20), outputs.GetRange(j, 20), 1,
-                Logging.Console, Optimizer.Adam,
+                Logging.Console, Optimizer.Adam, true,
                 filename);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -321,7 +324,7 @@ public class Program
         }
 
         classification.Learn(inputs, outputs, 200,
-            Logging.FileStream, Optimizer.Adam,
+            Logging.Console, Optimizer.Adam, true,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -379,7 +382,7 @@ public class Program
         }
 
         classification.Learn(inputs, outputs, 50,
-            Logging.FileStream, Optimizer.Adam,
+            Logging.FileStream, Optimizer.Adam, true,
             filename);
 
         for (int i = 0; i < inputs.Count; i++)
@@ -404,8 +407,8 @@ public class Program
     {
         Perceptron.Classification classification = new Perceptron.Classification(
             4,
-            new int[] { 20, 30, 25, 16 },
-            new List<ActFunc>() { ActFunc.Selu, ActFunc.Selu, ActFunc.Selu, ActFunc.Softmax }
+            new int[] { 80, 16 },
+            new List<ActFunc>() { ActFunc.Selu, ActFunc.Softmax }
         );
 
         List<double[]> inputs = new List<double[]>()
@@ -457,7 +460,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 1,
-                Logging.FileStream, Optimizer.Adam,
+                Logging.FileStream, Optimizer.Adam, true,
                 filename, alpha: 0.1, jump: 10);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -476,7 +479,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 1,
-                Logging.FileStream, Optimizer.Adam,
+                Logging.FileStream, Optimizer.Adam, true,
                 filename, alpha: 0.01, jump: 100);
 
             for (int i = 0; i < inputs.Count; i++)
@@ -495,7 +498,7 @@ public class Program
             }
 
             classification.Learn(inputs, outputs, 1,
-                Logging.FileStream, Optimizer.Adam,
+                Logging.FileStream, Optimizer.Adam, true,
                 filename, alpha: 0.001, jump: 1000);
 
             for (int i = 0; i < inputs.Count; i++)
